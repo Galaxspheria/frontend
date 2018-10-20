@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Arvind-Srinivasan/frontend.git"
+    "url": "git+https://github.com/Galaxspheria/frontend.git"
   },
   "author": "Hunter Hancock",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Arvind-Srinivasan/frontend/issues"
+    "url": "https://github.com/Galaxspheria/frontend/issues"
   },
-  "homepage": "https://github.com/Arvind-Srinivasan/frontend#readme",
+  "homepage": "https://github.com/Galaxspheria/frontend#readme",
   "dependencies": {
     "express": "^4.16.4"
   }
