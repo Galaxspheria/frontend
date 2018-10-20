@@ -525,6 +525,7 @@
                 <h2 id="wikipediaTitle" class="f3 lh-title fw9 mb3 mt0 pt3 bb bw2">
                     title
                 </h2>
+                <img id="wikipediaImage" class="fl mr2 mb2" src="" />
                 <div id="wikipediaExtract">
                     wikipedia
                 </div>
@@ -577,6 +578,12 @@
                 if(!page.missing && page.extract != "") {
                     $('#wikipediaTitle').text(page.title);
                     $('#wikipediaExtract').html(page.extract);
+                    console.log(page)
+                    if(page.thumbnail) {
+                        console.log(page.thumbnail)
+                        console.log(page.thumbnail.source)
+                        $('#wikipediaImage').attr("src", page.thumbnail.source);
+                    }
                     $('#wikipediaBlock').css("display", "block");
                 } else {
                     $('#wikipediaBlock').css("display", "none");
