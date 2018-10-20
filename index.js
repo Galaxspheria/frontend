@@ -14,6 +14,10 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/map', function (req, res) {
+    res.sendFile(__dirname + '/map.html');
+});
+
 var port = process.env.PORT || 3000;
 
 http.listen(port, function () {
@@ -39,10 +43,33 @@ function getURL(url) {
     )
 };
 
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+    );
+}
+
+function cleanParkName (name) {
+    return name.toLowerCase().replace(/ /g, "_");
+}
+
+function prettifyParkName(name) {
+    return toTitleCase(name.replace(/_/g, ' '));
+}
+
+function parseCoords (coordString) {
+    var chunks = coordString.split(", ");
+    if (chunks.length == 2) {
+        return [Number(chunks[0]), Number(chunks[1])];
+    }
+}
+
 io.on('connection', function (socket) {
-    console.log('user connected');
-    getURL('INSERTURL')
-    .then((result) => {
-        console.log(result);
-    })
+    // console.log('user connected');
+    // console.log('https://constant-abacus-220001.appspot.com/get/' + JSON.stringify({ a: 1, b: 2 }));
+    // getURL('https://constant-abacus-220001.appspot.com/get/'+JSON.stringify({a: 1, b: 2}))
+    // .then((result) => {
+    //     console.log(result);
+    // })
 });
