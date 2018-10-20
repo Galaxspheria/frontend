@@ -1,0 +1,22 @@
+{
+  "name": "meese",
+  "version": "0.0.1",
+  "description": "for HackGT 2018",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arvind-Srinivasan/frontend.git"
+  },
+  "author": "Hunter Hancock",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Arvind-Srinivasan/frontend/issues"
+  },
+  "homepage": "https://github.com/Arvind-Srinivasan/frontend#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
