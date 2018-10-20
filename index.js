@@ -72,4 +72,11 @@ io.on('connection', function (socket) {
     // .then((result) => {
     //     console.log(result);
     // })
+    socket.on('search', function(query) {
+        console.log('searching')
+        getURL('https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&formatversion=2&prop=extracts&exintro=true&titles=' + encodeURI(query))
+        .then((result) => {
+            socket.emit('wikipedia extract', result.query.pages[0]);
+        });
+    });
 });

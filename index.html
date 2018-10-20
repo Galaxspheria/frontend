@@ -9,11 +9,9 @@
         .highlight-green, .highlight-white { display: inline; line-height: 1.5em; padding: 0.25em; position: relative; left: 0.25em; padding-left: 0; }
         .highlight-green { background: #7FD142; box-shadow: 0.25em 0 0 #7FD142, calc(0.25em*-1) 0 0 #7FD142; }
         .highlight-white { background: #FFFFFF; box-shadow: 0.25em 0 0 #FFFFFF, calc(0.25em*-1) 0 0 #FFFFFF; padding-left: 0.25em; }
-        .dl-map {
-            width: 100%;
-            height: calc(100vh - 149px);
-        }
-        #scroller { display: none; animation: fadein 1s ease-out; }
+        .dl-map { width: 100%; }
+        .dl-map, .wiki-block { height: calc(100vh - 149px); }
+        #scroller, #wikipediaBlock { display: none; animation: fadein 1s ease-out; }
         @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
     </style>
   </head>
@@ -45,11 +43,24 @@
             <form id="searchForm" class="bg-blue center br2-ns">
                 <div class="cf">
                     <label class="clip" for="search">Search</label>
-                    <input class="f6 f5-l input-reset bn fl black-80 bg-white pa3 lh-solid w-100 w-75-m w-80-l br2-ns br--left-ns" placeholder="Search for a species" type="text" name="search" value="" id="search">
-                    <input class="f6 f5-l button-reset fl pv3 tc bn bg-animate bg-black-70 hover-bg-black white pointer w-100 w-25-m w-20-l br2-ns br--right-ns" type="button" value="Search">
+                    <input class="f6 f5-l input-reset bn fl black-80 bg-white pa3 lh-solid w-100 w-75-m w-80-l br2-ns br--left-ns" placeholder="Search for a species" type="text" name="search" value="" id="searchField"/>
+                    <input class="f6 f5-l button-reset fl pv3 tc bn bg-animate bg-black-70 hover-bg-black white pointer w-100 w-25-m w-20-l br2-ns br--right-ns" type="submit" value="Search"/>
                 </div>
                 </fieldset>
             </form>
+        </div>
+    </div>
+    <div class="absolute dt left-2 wiki-block z-1">
+        <div class="dtc v-mid">
+            <div id="wikipediaBlock" class="pa4 bg-white shadow-1 measure-narrow overflow-scroll" style="max-height: 75%;">
+                <button id="closeWiki" class="fr bg-transparent b--transparent gray"><i class="fa fa-times"></i></button>
+                <h2 id="wikipediaTitle" class="f3 lh-title fw9 mb3 mt0 pt3 bb bw2">
+                    title
+                </h2>
+                <div id="wikipediaExtract">
+                    wikipedia
+                </div>
+            </div>
         </div>
     </div>
     <div>
@@ -67,6 +78,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
         $(function () {
+            var socket = io();
             $('#scroller').click(function () {
                 $('html, body').animate({ scrollTop: 0 }, 'slow', function () {
                     console.log("reached top");
@@ -77,6 +89,11 @@
                     console.log("reached bottom");
                 });
             });
+            $('#searchForm').submit(function (event) {
+                event.preventDefault();
+                let query = $('#searchField').val();
+                socket.emit('search', query);
+            });
             document.addEventListener('scroll', function (event) {
                 if (window.pageYOffset != 0) {   
                     $('#scroller').css("display", "block");
@@ -85,6 +102,18 @@
                     $('#scroller').css("display", "none");
                 }
             }, true);
+            $('#closeWiki').click(function () {
+                $('#wikipediaBlock').css("display", "none");
+            });
+            socket.on('wikipedia extract', function (page) {
+                if(!page.missing && page.extract != "") {
+                    $('#wikipediaTitle').text(page.title);
+                    $('#wikipediaExtract').html(page.extract);
+                    $('#wikipediaBlock').css("display", "block");
+                } else {
+                    $('#wikipediaBlock').css("display", "none");
+                }
+            });
         });
     </script>
   </body>
