@@ -18,6 +18,10 @@ app.get('/map', function (req, res) {
     res.sendFile(__dirname + '/map.html');
 });
 
+app.get('/birds', function (req, res) {
+    res.sendFile(__dirname + '/birds.html');
+});
+
 var port = process.env.PORT || 3000;
 
 http.listen(port, function () {
