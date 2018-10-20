@@ -2,12 +2,33 @@
 <html>
   <head>
     <title>meese</title>
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css" />
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
+        .highlight-green, .highlight-white { display: inline; line-height: 1.5em; padding: 0.25em; position: relative; left: 0.25em; padding-left: 0; }
+        .highlight-green { background: #7FD142; box-shadow: 0.25em 0 0 #7FD142, calc(0.25em*-1) 0 0 #7FD142; }
+        .highlight-white { background: #FFFFFF; box-shadow: 0.25em 0 0 #FFFFFF, calc(0.25em*-1) 0 0 #FFFFFF; padding-left: 0.25em; }
     </style>
   </head>
-  <body>
-    <div>Hello World</div>
+  <body class="sans-serif">
+    <nav class="db dt-l w-100 border-box pa3 ph5-l fixed bb b--light-gray bg-white">
+        <a class="db dtc-l v-mid mid-gray link w-100 w-25-l tc tl-l mb2 mb0-l" href="#" title="Home">
+            <img src="/melvin.svg" class="dib w3 h2" alt="Site Name">
+        </a>
+        <div class="db dtc-l v-mid w-100 w-75-l tc tr-l">
+            <a class="link dim dark-gray f6 f5-l dib mr3 mr4-l" href="#" title="Home">Home</a>
+            <a class="link dim dark-gray f6 f5-l dib mr3 mr4-l" href="#" title="How it Works">How it Works</a>
+            <a class="link dim dark-gray f6 f5-l dib mr3 mr4-l" href="#" title="Blog">Blog</a>
+            <a class="link dim dark-gray f6 f5-l dib mr3 mr4-l" href="#" title="Press">Press</a>
+            <a class="link dim dark-gray f6 f5-l dib" href="#" title="Contact">Contact</a>
+        </div>
+    </nav>
+    <header class="vh-100 bg-blue dt w-100">
+        <div style="background:url(meesebg.svg) no-repeat bottom center;" class="dtc tc v-mid contain ph3 ph4-m ph5-l">
+            <h1 class="f2 f-subheadline-l measure lh-title fw9 highlight-green white">Monitoring & Promoting Biodiversity</h1>
+            <br/><br/><br/>
+            <h2 class="f3 fw4 black highlight-white">Maps for Evaluation, Exploration, and Surveying of Ecosystems</h2>
+            <h1><br/><br/><br/></h1>
+        </div>
+    </header>
   </body>
 </html>
