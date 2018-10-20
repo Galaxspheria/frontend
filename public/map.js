@@ -68,52 +68,43 @@
             console.log(features)
             return features;
         },
-        featuresToRows: (features) => {
-            return;
-            // let counts = {};
-            // console.log(features, x, y, z, tileSize, helpers)
-            // for (let i = 0; i < features.length; i++) {
-            //     let feature = features[i];
-            //     let coordinates = feature.geometry.coordinates;
-            //     let lng = coordinates[0];
-            //     let lat = coordinates[1];
+        featuresToRows: (features, x, y, z, tileSize, helpers) => {
+            let counts = {};
+            console.log(features, x, y, z, tileSize, helpers)
+            for (let i = 0; i < features.length; i++) {
+                let feature = features[i];
+                let coordinates = feature.geometry.coordinates;
+                let lng = coordinates[0];
+                let lat = coordinates[1];
 
-            //     let p = helpers.latLngToPixel(lat, lng, z, tileSize);
-            //     let px = p[0];
-            //     let py = p[1];
-            //     let tx = px % tileSize;
-            //     let ty = py % tileSize;
-            //     let key = tx + '-' + ty;
+                let p = helpers.latLngToPixel(lat, lng, z, tileSize);
+                let px = p[0];
+                let py = p[1];
+                let tx = px % tileSize;
+                let ty = py % tileSize;
+                let key = tx + '-' + ty;
 
-            //     if (counts[key]) {
-            //         counts[key] += 1;
-            //     } else {
-            //         counts[key] = 1;
-            //     }
-            // }
+                if (counts[key]) {
+                    counts[key] += 1;
+                } else {
+                    counts[key] = 1;
+                }
+            }
 
-            // let rows = [];
-            // for (let key in counts) {
-            //     let t = key.split('-');
-            //     let tx = Number(t[0]);
-            //     let ty = Number(t[1]);
-            //     let count = counts[key];
-            //     rows.push({
-            //         tx,
-            //         ty,
-            //         count,
-            //         value: count
-            //     });
-            // }
-            // return rows;
-
-            let p = helpers.latLngToPixel(x, y, z, tileSize);
-            let px = p[0];
-            let py = p[1];
-            let tx = px % tileSize;
-            let ty = py % tileSize;
-
-            return [{tx, ty, count: 1, value: 10}]
+            let rows = [];
+            for (let key in counts) {
+                let t = key.split('-');
+                let tx = Number(t[0]);
+                let ty = Number(t[1]);
+                let count = counts[key];
+                rows.push({
+                    tx,
+                    ty,
+                    count,
+                    value: count
+                });
+            }
+            return rows;
         }
     });
 
