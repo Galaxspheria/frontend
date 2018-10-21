@@ -71,7 +71,7 @@ function parseCoords(coordString) {
 }
 
 io.on('connection', function (socket) {
-    getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "park_info": "all" }))
+    getURL('https://meese-io.appspot.com/get/' + JSON.stringify({ "park_info": "all" }))
     .then((response) => {
         let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x][0])).filter(x => x);
         socket.emit('update heatmap', coordinates);
@@ -80,10 +80,10 @@ io.on('connection', function (socket) {
 
     socket.on('search', function(query) {
         let snakeQuery = cleanName(query);
-        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species_list": snakeQuery }))
+        getURL('https://meese-io.appspot.com/get/' + JSON.stringify({ "species_list": snakeQuery }))
         .then((results) => {
             if (results.includes(snakeQuery)) {
-                getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species": cleanName(snakeQuery) }))
+                getURL('https://meese-io.appspot.com/get/' + JSON.stringify({ "species": cleanName(snakeQuery) }))
                 .then((response) => {
                     if (response.output && Object.keys(response.output) && Object.keys(response.output).length > 0) {
                         let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x]));
@@ -116,7 +116,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('fetch suggestions', function(query) {
-        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species_list": query }))
+        getURL('https://meese-io.appspot.com/get/' + JSON.stringify({ "species_list": query }))
         .then((suggestions) => {
             if(suggestions.length > 0) {
                 socket.emit('autocomplete results', suggestions.map(x => prettifySpeciesName(x)));
@@ -128,14 +128,17 @@ io.on('connection', function (socket) {
     });
 
     socket.on('ai query', function(query) {
-        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "park_info_ml": cleanName(query) }))
+        getURL('https://meese-io.appspot.com/get/' + JSON.stringify({ "park_info_ml": cleanName(query) }))
         .then((aiResult) => {
             getURL('https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=1&utf8=&format=json&srsearch=' + encodeURI(prettifyParkName(aiResult.output)))
             .then((searchResult) => {
                 let pageid = encodeURI(searchResult.query.search[0].pageid);
                 getURL('https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages&pithumbsize=300&pageids=' + pageid)
                 .then((thumbnailResult) => {
-                    socket.emit('ai result', [prettifyParkName(aiResult.output), thumbnailResult.query.pages[0].thumbnail]);
+                    getURL('https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&formatversion=2&prop=extracts&exintro=true&pageids=' + pageid)
+                    .then((contentResult) => {
+                        socket.emit('ai result', [prettifyParkName(aiResult.output), thumbnailResult.query.pages[0].thumbnail, contentResult.query.pages[0].extract]);
+                    });
                 });
             })
         })
