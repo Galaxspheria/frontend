@@ -14,6 +14,8 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/ai', function (req, res) {
+    res.sendFile(__dirname + '/ai.html');
 });
 
 var port = process.env.PORT || 3000;
