@@ -1,3 +1,4 @@
+var updateLayerWithData;
 (function () {
     'use strict';
 
@@ -140,5 +141,97 @@
 
     // add layer to map
     map.addLayer(layer);
+
+    updateLayerWithData = function (coordinates) {
+        const rows = coordinates;
+        let csvContent = "data:text/csv;charset=utf-8,";
+        rows.forEach(function(rowArray){
+            let row = rowArray.join(",");
+            csvContent += row + "\r\n";
+        });
+        map.removeLayer(layer);
+        let newProvider = new H.datalens.RawDataProvider({
+            dataUrl: csvContent,
+            dataToFeatures: (data, helpers) => {
+                let parsed = helpers.parseCSV(data);
+                let features = [];
+                for (let i = 1; i < parsed.length; i++) {
+                    let row = parsed[i];
+                    let feature = {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [Number(row[0]), Number(row[1])]
+                        },
+                        "properties": {
+                            "acreage": 10
+                        }
+                    };
+                    features.push(feature);
+                }
+                return features;
+            },
+            featuresToRows: (features, x, y, z, tileSize, helpers) => {
+                let counts = {};
+                for (let i = 0; i < features.length; i++) {
+                    let feature = features[i];
+                    let coordinates = feature.geometry.coordinates;
+                    let lat = coordinates[1];
+                    let lng = coordinates[0];
+                    
+                    let p = helpers.latLngToPixel(lat, lng, z, tileSize);
+
+                    let px = p[0];
+                    let py = p[1];
+                    let tx = px % tileSize;
+                    let ty = py % tileSize;
+                    let key = tx + '-' + ty;
+
+                    if (counts[key]) {
+                        counts[key] += 1;
+                    } else {
+                        counts[key] = 1;
+                    }
+                }
+
+                let rows = [];
+                for (let key in counts) {
+                    let t = key.split('-');
+                    let tx = Number(t[0]);
+                    let ty = Number(t[1]);
+                    let count = 3000 * counts[key];
+                    rows.push({
+                        tx,
+                        ty,
+                        count: count * 25,
+                        value: count
+                    });
+                }
+                return rows;
+            }
+        });
+        let newLayer = new H.datalens.HeatmapLayer(newProvider, {
+            rowToTilePoint: function (row) {
+                return {
+                    x: row.tx,
+                    y: row.ty,
+                    count: row.count,
+                    value: row.count
+                };
+            },
+            bandwidth: [{
+                value: 42,
+                zoom: 4
+            }],
+            valueRange: z => [0, baseCount / Math.pow(z, 2 * nonLinearity)],
+            countRange: [0, 0],
+            opacity: 1,
+            colorScale,
+            aggregation: H.datalens.HeatmapLayer.Aggregation.SUM,
+            inputScale: H.datalens.HeatmapLayer.InputScale.LINEAR
+        });
+        map.addLayer(newLayer);
+        layer = newLayer;
+    }
 
 }());

@@ -54,7 +54,7 @@ function toTitleCase(str) {
     );
 }
 
-function cleanParkName (name) {
+function cleanName (name) {
     return name.toLowerCase().replace(/ /g, "_");
 }
 
@@ -70,18 +70,31 @@ function prettifySpeciesName(name) {
 function parseCoords (coordString) {
     var chunks = coordString.split(", ");
     if (chunks.length == 2) {
-        return [Number(chunks[0]), Number(chunks[1])];
+        return [Number(chunks[0].substr(4)), Number(chunks[1].substr(5))];
     }
 }
 
 io.on('connection', function (socket) {
-    // console.log('user connected');
-    // console.log('https://constant-abacus-220001.appspot.com/get/' + JSON.stringify({ a: 1, b: 2 }));
-    // getURL('https://constant-abacus-220001.appspot.com/get/'+JSON.stringify({a: 1, b: 2}))
-    // .then((result) => {
-    //     console.log(result);
+    // getURL('http://test-1-220001.appspot.com/get/' + JSON.stringify({ park_info: all }))
+    // .then((response) => {
+    //     console.log(reponse.output) // TODO: this - initial load with all park data and sizing on biodiversity
     // })
+
     socket.on('search', function(query) {
+        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species": cleanName(query) }))
+        .then((response) => {
+            if (response.output && Object.keys(response.output) && Object.keys(response.output).length > 0) {
+                let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x]));
+                console.log(coordinates);
+                socket.emit('update heatmap', coordinates);
+            } else {
+                // TODO: return error/empty data set
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+
         getURL('https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=1&utf8=&format=json&srsearch=' + encodeURI(query))
         .then((searchResult) => {
             let pageid = encodeURI(searchResult.query.search[0].pageid);
@@ -100,7 +113,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('fetch suggestions', function(query) {
-        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ species_list: query }))
+        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species_list": query }))
         .then((suggestions) => {
             if(suggestions.length > 0) {
                 socket.emit('autocomplete results', suggestions.map(x => prettifySpeciesName(x)));

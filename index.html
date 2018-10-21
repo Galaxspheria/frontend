@@ -700,7 +700,10 @@
             });
             socket.on('autocomplete results', function (results) {
                 autocomplete(document.getElementById("searchField"), results);
-            })
+            });
+            socket.on('update heatmap', function (newCoords) {
+                updateLayerWithData(newCoords);
+            });
         });
     </script>
   </body>
