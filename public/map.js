@@ -100,7 +100,7 @@ var updateLayerWithData;
                 rows.push({
                     tx,
                     ty,
-                    count: count * 25,
+                    count: count * 10,
                     value: count
                 });
             }
@@ -128,7 +128,7 @@ var updateLayerWithData;
             };
         },
         bandwidth: [{
-            value: 42,
+            value: 10,
             zoom: 4
         }],
         valueRange: z => [0, baseCount / Math.pow(z, 2 * nonLinearity)],
@@ -203,7 +203,7 @@ var updateLayerWithData;
                     rows.push({
                         tx,
                         ty,
-                        count: count * 25,
+                        count: count * 10,
                         value: count
                     });
                 }
@@ -220,7 +220,7 @@ var updateLayerWithData;
                 };
             },
             bandwidth: [{
-                value: 42,
+                value: 10,
                 zoom: 4
             }],
             valueRange: z => [0, baseCount / Math.pow(z, 2 * nonLinearity)],
