@@ -14,12 +14,6 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/map', function (req, res) {
-    res.sendFile(__dirname + '/map.html');
-});
-
-app.get('/birds', function (req, res) {
-    res.sendFile(__dirname + '/birds.html');
 });
 
 var port = process.env.PORT || 3000;
@@ -54,7 +48,7 @@ function toTitleCase(str) {
     );
 }
 
-function cleanName (name) {
+function cleanName(name) {
     return name.toLowerCase().replace(/ /g, "_");
 }
 
@@ -67,7 +61,7 @@ function prettifySpeciesName(name) {
     return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
-function parseCoords (coordString) {
+function parseCoords(coordString) {
     var chunks = coordString.split(", ");
     if (chunks.length == 2) {
         return [Number(chunks[1].substr(5)), Number(chunks[0].substr(4))];
@@ -78,19 +72,24 @@ io.on('connection', function (socket) {
     getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "park_info": "all" }))
     .then((response) => {
         let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x][0])).filter(x => x);
-        console.log(coordinates);
         socket.emit('update heatmap', coordinates);
         // TODO: sizing on biodiversity
     })
 
     socket.on('search', function(query) {
-        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species": cleanName(query) }))
-        .then((response) => {
-            if (response.output && Object.keys(response.output) && Object.keys(response.output).length > 0) {
-                let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x]));
-                socket.emit('update heatmap', coordinates);
-            } else {
-                // TODO: return error/empty data set
+        let snakeQuery = cleanName(query);
+        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species_list": snakeQuery }))
+        .then((results) => {
+            if (results.includes(snakeQuery)) {
+                getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species": cleanName(snakeQuery) }))
+                .then((response) => {
+                    if (response.output && Object.keys(response.output) && Object.keys(response.output).length > 0) {
+                        let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x]));
+                        socket.emit('update heatmap', coordinates);
+                    } else {
+                        // TODO: return error/empty data set
+                    }
+                })
             }
         })
         .catch((err) => {
