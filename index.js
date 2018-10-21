@@ -62,6 +62,11 @@ function prettifyParkName(name) {
     return toTitleCase(name.replace(/_/g, ' '));
 }
 
+function prettifySpeciesName(name) {
+    let lower = name.replace(/_/g, ' ').toLowerCase();
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
 function parseCoords (coordString) {
     var chunks = coordString.split(", ");
     if (chunks.length == 2) {
