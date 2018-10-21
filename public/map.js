@@ -29,10 +29,10 @@
     // initialize a map  - not specifying a location will give a whole world view.
     let map = new H.Map(
         document.getElementsByClassName('dl-map')[0],
-        defaultLayers.normal.basenight, {
+        defaultLayers.normal.xbase, {
             pixelRatio,
             center: new H.geo.Point(39.8283, -98.5795),
-            zoom: 0//4.5
+            zoom: 4
         }
     );
 
@@ -65,7 +65,6 @@
                 };
                 features.push(feature);
             }
-            console.log(features)
             return features;
         },
         featuresToRows: (features, x, y, z, tileSize, helpers) => {
@@ -73,9 +72,9 @@
             for (let i = 0; i < features.length; i++) {
                 let feature = features[i];
                 let coordinates = feature.geometry.coordinates;
-                let lat = coordinates[0];
-                let lng = coordinates[1];
-
+                let lat = coordinates[1];
+                let lng = coordinates[0];
+                
                 let p = helpers.latLngToPixel(lat, lng, z, tileSize);
 
                 let px = p[0];
@@ -96,29 +95,22 @@
                 let t = key.split('-');
                 let tx = Number(t[0]);
                 let ty = Number(t[1]);
-                let count = 200 * counts[key];
+                let count = 3000 * counts[key];
                 rows.push({
                     tx,
                     ty,
-                    count,
+                    count: count * 25,
                     value: count
                 });
             }
-            console.log(rows, z);
             return rows;
         }
     });
 
-    function viridisWithAlpha(t) {
-        let c = d3.color(d3.interpolateViridis(t));
-        c.opacity = d3.scaleLinear().domain([0, 0.05, 1]).range([0, 1, 1])(t);
-        return c + '';
-    }
-
     const colorScale = d3.scaleLinear().range([
         'rgba(30, 68, 165, 0.03)',
-        'rgba(87, 164, 217, 0.8)',
-        'rgba(202, 248, 191, 0.8)'
+        'rgba(255, 183, 0, 0.8)',
+        'rgba(231, 4, 15, 0.8)'
     ]).domain([0, .5, 1]);
 
     let baseCount = 10000;
@@ -127,7 +119,6 @@
     // heatmap layer
     let layer = new H.datalens.HeatmapLayer(provider, {
         rowToTilePoint: function (row) {
-            console.log(row)
             return {
                 x: row.tx,
                 y: row.ty,
@@ -136,19 +127,15 @@
             };
         },
         bandwidth: [{
-            value: 1,
+            value: 42,
             zoom: 4
-        },
-        {
-            value: 4,
-            zoom: 17
         }],
-        // valueRange: z => [0, baseCount / Math.pow(z, 2 * nonLinearity)],
+        valueRange: z => [0, baseCount / Math.pow(z, 2 * nonLinearity)],
         countRange: [0, 0],
         opacity: 1,
-        colorScale, // viridisWithAlpha,
-        // aggregation: H.datalens.HeatmapLayer.Aggregation.SUM,
-        // inputScale: H.datalens.HeatmapLayer.InputScale.LINEAR
+        colorScale,
+        aggregation: H.datalens.HeatmapLayer.Aggregation.SUM,
+        inputScale: H.datalens.HeatmapLayer.InputScale.LINEAR
     });
 
     // add layer to map
