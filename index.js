@@ -83,13 +83,18 @@ io.on('connection', function (socket) {
     // })
     socket.on('search', function(query) {
         console.log('searching')
-        getURL('https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages&pithumbsize=320&titles=' + encodeURI(query))
-        .then((thumbnailResult) => {
-            getURL('https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&formatversion=2&prop=extracts&exintro=true&titles=' + encodeURI(query))
-            .then((contentResult) => {
-                contentResult.query.pages[0].thumbnail = thumbnailResult.query.pages[0].thumbnail
-                socket.emit('wikipedia extract', contentResult.query.pages[0]);
+        getURL('https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=1&utf8=&format=json&srsearch=' + encodeURI(query))
+        .then((searchResult) => {
+            let pageid = encodeURI(searchResult.query.search[0].pageid)
+            getURL('https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages&pithumbsize=150&pageids=' + pageid)
+            .then((thumbnailResult) => {
+                getURL('https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&formatversion=2&prop=extracts&exintro=true&pageids=' + pageid)
+                .then((contentResult) => {
+                    contentResult.query.pages[0].thumbnail = thumbnailResult.query.pages[0].thumbnail
+                    socket.emit('wikipedia extract', contentResult.query.pages[0]);
+                });
             });
         });
+        })
     });
 });

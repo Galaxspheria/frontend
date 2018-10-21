@@ -578,11 +578,11 @@
                 if(!page.missing && page.extract != "") {
                     $('#wikipediaTitle').text(page.title);
                     $('#wikipediaExtract').html(page.extract);
-                    console.log(page)
                     if(page.thumbnail) {
-                        console.log(page.thumbnail)
-                        console.log(page.thumbnail.source)
                         $('#wikipediaImage').attr("src", page.thumbnail.source);
+                        $('#wikipediaImage').css("display", "block");
+                    } else {
+                        $('#wikipediaImage').css("display", "none");
                     }
                     $('#wikipediaBlock').css("display", "block");
                 } else {
