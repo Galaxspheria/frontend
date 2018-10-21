@@ -36,7 +36,9 @@
             -->
         </div>
     </nav>
-    <button id="scroller" class="fixed br-100 h2 w2 bottom-2 right-2 z-1 grow b--blue bg-blue white shadow-1"><i class="fa fa-chevron-up"></i></button>
+    <div class="fixed bottom-2 left-0 right-0 tc z-1 w-100 h3">
+        <button id="scroller" class="br-100 f3 h3 w3 grow b--blue bg-blue white shadow-1 dib"><i class="fa fa-chevron-up"></i></button>
+    </div>
     <header class="vh-100 bg-blue dt w-100">
         <div class="absolute top-0 left-0 right-0 bottom-0" id="birdContainer" style="opacity: 0.4;">
             <span id="birds"></span>
@@ -673,9 +675,8 @@
                 return false;
             });
             document.addEventListener('scroll', function (event) {
-                if (window.pageYOffset != 0) {   
-                    $('#scroller').css("display", "block");
-                    $('#scroller').css("position", "fixed");
+                if (window.pageYOffset > 100) {   
+                    $('#scroller').css("display", "inline-block");
                 } else {
                     $('#scroller').css("display", "none");
                 }
