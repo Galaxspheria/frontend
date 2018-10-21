@@ -93,7 +93,10 @@ io.on('connection', function (socket) {
                     socket.emit('wikipedia extract', contentResult.query.pages[0]);
                 });
             });
-        });
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     });
 
     socket.on('fetch suggestions', function(query) {
@@ -102,4 +105,9 @@ io.on('connection', function (socket) {
             if(suggestions.length > 0) {
                 socket.emit('autocomplete results', suggestions.map(x => prettifySpeciesName(x)));
             }
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    });
 });
