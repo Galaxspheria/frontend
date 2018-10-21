@@ -70,22 +70,24 @@ function prettifySpeciesName(name) {
 function parseCoords (coordString) {
     var chunks = coordString.split(", ");
     if (chunks.length == 2) {
-        return [Number(chunks[0].substr(4)), Number(chunks[1].substr(5))];
+        return [Number(chunks[1].substr(5)), Number(chunks[0].substr(4))];
     }
 }
 
 io.on('connection', function (socket) {
-    // getURL('http://test-1-220001.appspot.com/get/' + JSON.stringify({ park_info: all }))
-    // .then((response) => {
-    //     console.log(reponse.output) // TODO: this - initial load with all park data and sizing on biodiversity
-    // })
+    getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "park_info": "all" }))
+    .then((response) => {
+        let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x][0])).filter(x => x);
+        console.log(coordinates);
+        socket.emit('update heatmap', coordinates);
+        // TODO: sizing on biodiversity
+    })
 
     socket.on('search', function(query) {
         getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "species": cleanName(query) }))
         .then((response) => {
             if (response.output && Object.keys(response.output) && Object.keys(response.output).length > 0) {
                 let coordinates = Object.keys(response.output).map(x => parseCoords(response.output[x]));
-                console.log(coordinates);
                 socket.emit('update heatmap', coordinates);
             } else {
                 // TODO: return error/empty data set
