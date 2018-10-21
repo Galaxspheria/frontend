@@ -95,4 +95,11 @@ io.on('connection', function (socket) {
             });
         });
     });
+
+    socket.on('fetch suggestions', function(query) {
+        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ species_list: query }))
+        .then((suggestions) => {
+            if(suggestions.length > 0) {
+                socket.emit('autocomplete results', suggestions.map(x => prettifySpeciesName(x)));
+            }
 });
