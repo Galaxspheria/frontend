@@ -126,4 +126,21 @@ io.on('connection', function (socket) {
             console.log(err);
         })
     });
+
+    socket.on('ai query', function(query) {
+        getURL('https://test-1-220001.appspot.com/get/' + JSON.stringify({ "park_info_ml": cleanName(query) }))
+        .then((aiResult) => {
+            getURL('https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=1&utf8=&format=json&srsearch=' + encodeURI(prettifyParkName(aiResult.output)))
+            .then((searchResult) => {
+                let pageid = encodeURI(searchResult.query.search[0].pageid);
+                getURL('https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages&pithumbsize=300&pageids=' + pageid)
+                .then((thumbnailResult) => {
+                    socket.emit('ai result', [prettifyParkName(aiResult.output), thumbnailResult.query.pages[0].thumbnail]);
+                });
+            })
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    });
 });

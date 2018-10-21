@@ -4,11 +4,25 @@
     <title>meese.io</title>
     <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <style>
+        #comment-desc, #locationCard { display: none; animation: fadein 1s ease-out; }
+        @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+    </style>
   </head>
   <body class="sans-serif">
     <div class="tc">
         <img class="h5 w5 dib" src="/melvin.svg" />
     </div>
+    <article id="locationCard" class="br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw5 center">
+        <img src="http://placekitten.com/g/600/300" id="locationImage" class="db w-100 br2 br--top">
+        <div class="pa2 ph3-ns pb3-ns">
+            <div class="dt w-100 mt1">
+                <div class="dtc">
+                    <h1 class="f5 f4-ns mv0" id="locationTitle">Cat</h1>
+                </div>
+            </div>
+        </div>
+    </article>
     <section class="ph3 ph5-ns pv5">
         <article class="mw8 center br2 ba b--light-blue bg-lightest-blue">
             <div class="dt-ns dt--fixed-ns w-100">
@@ -22,11 +36,35 @@
                 </div>
                 <div class="pa3 pa4-ns dtc-ns v-mid">
                     <label for="comment" class="f6 b db mb2">Tell us about your ideal adventure <span class="normal black-60">(the more detail the better!)</span></label>
-                    <textarea id="comment" name="comment" class="db border-box hover-black w-100 measure ba b--black-20 pa2 br2 mb2" aria-describedby="comment-desc"></textarea>
-                    <a href="#" class="no-underline f6 tc db w-100 pv3 bg-animate bg-blue hover-bg-dark-blue white br2">Match Me</a>
+                    <textarea style="resize: vertical;" id="comment" name="comment" class="db border-box hover-black w-100 measure ba b--black-20 pa2 br2 mb2" aria-describedby="comment-desc"></textarea>
+                    <small id="comment-desc" class="f6 black-60">Please write at least 25 words so we can pair you most effectively!</small>
+                    <button id="match" class="no-underline f6 tc db w-100 pv3 bg-animate bg-blue hover-bg-dark-blue white br2 mt3">Match Me</button>
                 </div>
             </div>
         </article>
     </section>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        $(function () {
+            var socket = io();
+            $('#match').click(function () {
+                let query = $('#comment').val();
+                console.log('sub')
+                if(query.split(" ").length > 50) {
+                    socket.emit('ai query', query);
+                    $('#comment-desc').css('display', 'none')
+                } else {
+                    $('#comment-desc').css('display', 'block')
+                }
+            });
+            socket.on('ai result', function (result) {
+                console.log(result);
+                $('#locationCard').css("display", "block");
+                $('#locationTitle').text(result[0]);
+                $('#locationImage').attr("src", result[1].source);
+            });
+        });
+    </script>
   </body>
 </html>
