@@ -82,10 +82,9 @@ io.on('connection', function (socket) {
     //     console.log(result);
     // })
     socket.on('search', function(query) {
-        console.log('searching')
         getURL('https://en.wikipedia.org/w/api.php?action=query&list=search&srlimit=1&utf8=&format=json&srsearch=' + encodeURI(query))
         .then((searchResult) => {
-            let pageid = encodeURI(searchResult.query.search[0].pageid)
+            let pageid = encodeURI(searchResult.query.search[0].pageid);
             getURL('https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages&pithumbsize=150&pageids=' + pageid)
             .then((thumbnailResult) => {
                 getURL('https://en.wikipedia.org/w/api.php?action=query&prop=revisions&rvprop=content&format=json&formatversion=2&prop=extracts&exintro=true&pageids=' + pageid)
@@ -95,6 +94,5 @@ io.on('connection', function (socket) {
                 });
             });
         });
-        })
     });
 });
